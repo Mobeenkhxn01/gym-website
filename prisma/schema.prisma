@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Consultation {
+  id        String             @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  goal      String
+  plan      MembershipPlanName
+  source    String             @default("website")
+  status    ConsultationStatus @default(NEW)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+enum MembershipPlanName {
+  STARTER
+  PERFORMANCE
+  ELITE_COACHING
+}
+
+enum ConsultationStatus {
+  NEW
+  CONTACTED
+  BOOKED
+  ARCHIVED
+}

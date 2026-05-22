@@ -1,29 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getPrisma } from "@/lib/prisma";
 import { fromMembershipPlanName, toMembershipPlanName } from "@/lib/plans";
-
-type ConsultationPayload = {
-  name?: string;
-  email?: string;
-  phone?: string;
-  goal?: string;
-  plan?: string;
-};
-
-function clean(value: unknown) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { consultationSchema } from "@/lib/validators/consultation";
+import { requireAdminKey } from "@/lib/middleware/auth";
+import { ZodError } from "zod";
 
 function isMissingDatabaseUrl(error: unknown) {
   return error instanceof Error && error.message.includes("DATABASE_URL");
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authError = requireAdminKey(request);
+  if (authError) return authError;
+
   try {
     const prisma = getPrisma();
     const consultations = await prisma.consultation.findMany({
       orderBy: { createdAt: "desc" },
-      take: 8
+      take: 50,
     });
 
     return NextResponse.json({
@@ -35,8 +29,8 @@ export async function GET() {
         goal: item.goal,
         plan: fromMembershipPlanName(item.plan),
         status: item.status,
-        createdAt: item.createdAt.toISOString()
-      }))
+        createdAt: item.createdAt.toISOString(),
+      })),
     });
   } catch (error) {
     if (isMissingDatabaseUrl(error)) {
@@ -44,26 +38,32 @@ export async function GET() {
     }
 
     return NextResponse.json(
-      {
-        consultations: [],
-        error: error instanceof Error ? error.message : "Unable to load consultations."
-      },
+      { error: error instanceof Error ? error.message : "Unable to load consultations." },
       { status: 503 }
     );
   }
 }
 
-export async function POST(request: Request) {
-  const payload = (await request.json()) as ConsultationPayload;
-  const name = clean(payload.name);
-  const email = clean(payload.email);
-  const phone = clean(payload.phone);
-  const goal = clean(payload.goal) || "Build muscle";
-  const plan = clean(payload.plan) || "Performance";
+export async function POST(request: NextRequest) {
+  let body: unknown;
 
-  if (!name || !email || !phone) {
-    return NextResponse.json({ error: "Name, email, and phone are required." }, { status: 400 });
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
+
+  const parsed = consultationSchema.safeParse(body);
+
+  if (!parsed.success) {
+    const errors = parsed.error as ZodError;
+    return NextResponse.json(
+      { error: "Validation failed.", details: errors.flatten().fieldErrors },
+      { status: 422 }
+    );
+  }
+
+  const { name, email, phone, goal, plan } = parsed.data;
 
   try {
     const prisma = getPrisma();
@@ -73,8 +73,8 @@ export async function POST(request: Request) {
         email,
         phone,
         goal,
-        plan: toMembershipPlanName(plan)
-      }
+        plan: toMembershipPlanName(plan),
+      },
     });
 
     return NextResponse.json(
@@ -87,8 +87,8 @@ export async function POST(request: Request) {
           goal: consultation.goal,
           plan: fromMembershipPlanName(consultation.plan),
           status: consultation.status,
-          createdAt: consultation.createdAt.toISOString()
-        }
+          createdAt: consultation.createdAt.toISOString(),
+        },
       },
       { status: 201 }
     );
@@ -104,8 +104,8 @@ export async function POST(request: Request) {
             goal,
             plan,
             status: "LOCAL_ONLY",
-            createdAt: new Date().toISOString()
-          }
+            createdAt: new Date().toISOString(),
+          },
         },
         { status: 202 }
       );

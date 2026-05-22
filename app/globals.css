@@ -1019,3 +1019,9 @@ footer span:first-child {
     flex-direction: column;
   }
 }
+
+.status-error {
+  background: rgba(228, 61, 48, 0.1);
+  border-color: rgba(228, 61, 48, 0.3);
+  color: #b4261e !important;
+}

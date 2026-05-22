@@ -1,187 +1,118 @@
-# ForgeFit Gym
+# ForgeFit — Premium Gym & Fitness Club Website
 
-A production-grade gym website built with Next.js 16, TypeScript, Prisma 7, and NeonDB (PostgreSQL). Features a consultation booking system, class schedule, BMI calculator, pricing plans, and coach profiles.
+**Live Demo → [forgefitx.vercel.app](https://forgefitx.vercel.app/)**
 
-## Tech Stack
+A complete, conversion-focused website built for modern gyms, fitness clubs, and personal training studios. Everything is ready to launch — just add your brand, content, and go live.
 
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript (strict mode)
-- **ORM**: Prisma 7 with NeonDB serverless adapter
-- **Database**: PostgreSQL via NeonDB
-- **Validation**: Zod
-- **Icons**: Lucide React
+---
 
-## Project Structure
+## What's Included
 
-```
-app/
-  api/consultations/route.ts   # POST (public) + GET (admin-only)
-  components/
-    GymWebsite.tsx             # Orchestrator — shared state only
-    SiteHeader.tsx             # Nav + mobile menu with focus trap
-    HeroSection.tsx
-    BmiPanel.tsx               # Client-side BMI calculator
-    ExperienceSection.tsx
-    OutcomesSection.tsx
-    ClassSchedule.tsx          # Category filter + class list
-    FacilityBand.tsx
-    PricingSection.tsx
-    CoachSection.tsx
-    TestimonialsSection.tsx
-    FaqSection.tsx
-    BookingForm.tsx             # Form with proper error states
-    SiteFooter.tsx
-  globals.css
-  layout.tsx
-  page.tsx
-lib/
-  data.ts                      # All static content (plans, classes, trainers…)
-  middleware/auth.ts           # Admin API key check
-  prisma.ts                    # Singleton Prisma client
-  plans.ts                     # Enum conversion helpers
-  validators/consultation.ts   # Zod schema for POST /api/consultations
-  generated/prisma/            # Prisma-generated client (do not edit)
-prisma/
-  schema.prisma
-  migrations/
-```
+### Pages & Sections
 
-## Local Setup
+- **Hero** — Full-screen banner with headline, subheadline, and two call-to-action buttons
+- **Program Strip** — Highlight your core offerings (Strength, Conditioning, PT, Recovery, Nutrition)
+- **BMI Calculator** — Interactive tool that warms up visitors and connects them to your consultation form
+- **Experience** — Split-layout section with text and a three-image grid to showcase your facility
+- **Member Journey** — Three-card outcome section explaining your onboarding process
+- **Class Schedule** — Filterable live schedule with category tabs (Strength, Cardio, Recovery, Combat)
+- **Facility Highlights** — Full-width banner listing your equipment and amenities
+- **Membership Plans** — Three-tier pricing cards (Starter, Performance, Elite Coaching) with a highlighted "Popular" plan
+- **Coaches** — Photo cards for each trainer with role and credentials
+- **Member Testimonials** — Three star-rated review cards with name and result
+- **FAQ** — Accordion-style frequently asked questions section
+- **Consultation Booking Form** — Lead capture form with name, email, phone, goal, and plan selection
+- **Final CTA Banner** — High-contrast closing call-to-action with trial offer
+- **Footer** — Business name, address, and copyright
 
-### 1. Install dependencies
+### Features
 
-```bash
-pnpm install
-```
+- Fully responsive — works on mobile, tablet, and desktop
+- Sticky navigation header with mobile slide-out menu
+- Smooth scroll navigation between sections
+- Class schedule filters by category
+- Pricing plan selection syncs with the booking form
+- Consultation form saves leads to your database
+- Works without a database configured (shows a friendly message, no crash)
+- Fast load — images lazy-loaded, fonts optimized
+- SEO-ready metadata (title, description)
+- Keyboard accessible — mobile menu has a full focus trap
+- Clean, modern design with a dark/premium aesthetic
 
-### 2. Configure environment variables
+---
 
-```bash
-cp .env.example .env
-```
+## What You Can Customize
 
-Edit `.env` and fill in the three variables:
+Every section is built as a standalone, editable block:
 
-| Variable | Description |
+| What | Where |
 |---|---|
-| `DATABASE_URL` | Pooled Neon connection string (used at runtime) |
-| `DIRECT_URL` | Direct Neon connection string (used by Prisma CLI for migrations) |
-| `ADMIN_API_KEY` | Secret key required to call `GET /api/consultations` |
+| Plans, prices, perks | `lib/data.ts` — `PLANS` array |
+| Class schedule | `lib/data.ts` — `CLASSES` array |
+| Trainer names, roles, photos | `lib/data.ts` — `TRAINERS` array |
+| Testimonials | `lib/data.ts` — `TESTIMONIALS` array |
+| FAQs | `lib/data.ts` — `FAQS` array |
+| Facility list | `lib/data.ts` — `FACILITIES` array |
+| Business name, address, phone, email | `app/components/BookingForm.tsx` + `SiteFooter.tsx` |
+| Hero image | `lib/data.ts` — `HERO_IMAGE` |
+| Studio/facility images | `lib/data.ts` — `STUDIO_IMAGES` |
+| Page title and SEO description | `app/layout.tsx` |
+| Brand colors | `app/globals.css` — CSS variables at the top |
 
-Both connection strings are available in the Neon dashboard under your project → **Connection Details**.
+All content lives in one file (`lib/data.ts`). No digging through components to update your gym's details.
 
-### 3. Generate the Prisma client
+---
 
-```bash
-pnpm prisma:generate
-```
+## Lead Management
 
-### 4. Run database migrations
+When a visitor submits the consultation form:
 
-```bash
-pnpm prisma:migrate
-```
+- Their details (name, email, phone, goal, plan interest) are saved to your database
+- You can retrieve all submissions via a private admin API endpoint
+- The form handles errors gracefully — if the database is temporarily unavailable, the visitor still sees a confirmation and you can follow up manually
 
-### 5. Start the dev server
+---
 
-```bash
-pnpm dev
-```
+## Setup (for the buyer's developer)
 
-The site runs at [http://localhost:3000](http://localhost:3000).
+Full step-by-step instructions are in the technical documentation included with the project. Setup takes under 15 minutes for a developer familiar with web hosting.
 
-## Available Scripts
+The site is ready to deploy to any modern hosting platform. No special infrastructure required.
 
-| Script | Description |
-|---|---|
-| `pnpm dev` | Start Next.js in development mode |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm prisma:generate` | Regenerate Prisma client after schema changes |
-| `pnpm prisma:migrate` | Apply pending migrations |
-| `pnpm prisma:studio` | Open Prisma Studio (visual DB browser) |
+---
 
-## API
+## Design
 
-### `POST /api/consultations`
+- Dark, premium aesthetic with a warm neutral background
+- High-contrast hero with overlay gradient
+- Bold display typography for headings
+- Accent red color scheme (fully customizable in one place)
+- Consistent 8px border-radius design system throughout
+- Smooth hover states on all interactive elements
 
-Public endpoint. Submits a free consultation request.
+---
 
-**Request body**
+## What This Is Not
 
-```json
-{
-  "name": "Alex Morgan",
-  "email": "alex@example.com",
-  "phone": "+1 555 000 0000",
-  "goal": "Build muscle",
-  "plan": "Performance"
-}
-```
+- Not a page builder or template editor — this is production source code
+- Not a SaaS subscription — you own it outright after purchase
+- Not locked to any platform — host it wherever you want
 
-**Validation rules** (enforced by Zod):
-- `name`: 2–100 characters
-- `email`: valid format, max 254 characters
-- `phone`: 7–20 characters, digits/spaces/`+`/`-`/`()`/`.` only
-- `plan`: one of `Starter` | `Performance` | `Elite Coaching`
+---
 
-**Responses**
+## Ideal For
 
-| Status | Meaning |
-|---|---|
-| 201 | Consultation saved to database |
-| 202 | Database not configured; request acknowledged locally |
-| 400 | Malformed JSON |
-| 422 | Validation failed (field errors included) |
-| 503 | Database error |
+- Gyms and fitness clubs launching or refreshing their online presence
+- Personal trainers who want a professional lead-capture site
+- CrossFit boxes, boutique studios, and conditioning facilities
+- Agencies building gym websites for clients
 
-### `GET /api/consultations`
-
-Admin-only. Returns the 50 most recent consultation records.
-
-Requires the header:
-
-```
-x-admin-key: <your ADMIN_API_KEY>
-```
-
-Returns 401 if the key is missing or incorrect.
-
-## Deployment
-
-### NeonDB
-
-1. Create a project at [neon.tech](https://neon.tech).
-2. Copy the **pooled** connection string to `DATABASE_URL`.
-3. Copy the **direct** connection string to `DIRECT_URL`.
-4. Run `pnpm prisma:migrate` once against the production database.
-
-### Vercel
-
-1. Push to GitHub and import the repository in Vercel.
-2. Add the three environment variables (`DATABASE_URL`, `DIRECT_URL`, `ADMIN_API_KEY`) in **Project Settings → Environment Variables**.
-3. Deploy.
-
-## Environment Variables Reference
-
-```env
-# Pooled connection string — used by the app at runtime
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
-
-# Direct connection string — used by Prisma CLI for migrations only
-DIRECT_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
-
-# Secret key for the admin GET /api/consultations endpoint
-ADMIN_API_KEY=replace-with-a-strong-random-secret
-```
-
-Generate a strong `ADMIN_API_KEY` with:
-
-```bash
-openssl rand -hex 32
-```
+---
 
 ## License
 
-MIT
+Single-use commercial license. You may use and modify this project for one business or client. You may not resell or redistribute the source code.
+
+---
+
+*For questions before purchase, feel free to reach out.*
